@@ -12,8 +12,14 @@ export default new VueRouter({
   linkActiveClass: 'active',
   linkExactActiveClass: 'active',
   routes: [
-    { path: '/contatos', component: Contatos },
-    { path: '/contatos/:id', component: ContatoDetalhes},
+    { 
+        path: '/contatos', 
+        component: Contatos,
+        children: [
+            { path: ':id', component: ContatoDetalhes},
+        ]
+    },
+    
     { path: '/', component: Home}
   ]
 })
