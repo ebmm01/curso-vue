@@ -1,10 +1,20 @@
 <template>
     <div>
         <h3 class="font-weight-light">Contatos</h3>
-        <ul class="list-group" v-if="contatos.length > 0">
+
+        <div class="form-group">
+            <input 
+                type="search"
+                class="form-control"
+                placeholder="Buscar contatos"
+                @keyup.enter="buscar"
+                :value="busca">
+        </div>
+
+        <ul class="list-group" v-if="contatosFiltrados.length > 0">
             <ContatosListaIten
                 class="list-group-item"
-                v-for="contato in contatos"
+                v-for="contato in contatosFiltrados"
                 :key="contato.id"
                 :contato="contato"/>
         </ul>
@@ -16,25 +26,40 @@
 
 <script>
 import ContatosListaIten from './ContatosListaIten'
+import EventBus from '@/event-bus.js'
 
 export default {
     components: {
        ContatosListaIten 
     },
+    computed: {
+        contatosFiltrados() {
+            const busca = this.busca
+            return !busca 
+                ? this.contatos
+                : this.contatos.filter(contato => contato.nome.toLowerCase().includes(busca.toLowerCase()))
+        }
+    },
+    props: ['busca'],
     data() {
         return {
-            contatos: [
-                {id: 1, nome: 'Isaac', email: 'isaac@email.com'},
-                {id: 2, nome: 'IsaaAlbertc', email: 'albert@email.com'},
-                {id: 3, nome: 'Stephen', email: 'Stephen@email.com'}
-            ]
+            contatos: []
         }
     },
     methods: {
         voltar(event) {
             //this.$router.push('/')
             this.$router.back()
+        },
+        buscar(event) {
+            this.$router.push({
+                path: '/contatos',
+                query:{ busca: event.target.value }
+            })
         }
+    },
+    created() {
+        this.contatos = EventBus.contatos
     }
 }
 </script>
